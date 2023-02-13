@@ -1,0 +1,2 @@
+#define create_clib_plugin_VERSION_MAJOR @create_clib_plugin_VERSION_MAJOR@
+#define create_clib_plugin_VERSION_MINOR @create_clib_plugin_VERSION_MINOR@

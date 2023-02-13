@@ -1,6 +1,6 @@
 # Build Directories
-cmake-build-debug/
-cmake-build-release/
+build/
+out/
 
 # IDE Directories
 .vs/

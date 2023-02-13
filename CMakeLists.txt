@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-SET(CREATE_CLIB_PLUGIN_VERSION 0.0.1 CACHE STRING "Version of libInterface")
-project(create_clib_plugin VERSION ${CREATE_CLIB_PLUGIN_VERSION})
-
-add_definitions( -DCREATE_CLIB_PLUGIN_VERSION=${CREATE_CLIB_PLUGIN_VERSION} )
+project(create_clib_plugin VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -14,7 +11,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(git2cpp)
 
+configure_file(create_clib_plugin.h.in create_clib_plugin.h)
 
-add_executable(create_clib_plugin main.cpp)
+
+add_executable(create_clib_plugin main.cpp create_clib_plugin.h.in)
 set_target_properties(create_clib_plugin PROPERTIES OUTPUT_NAME "create-clib-plugin")
 target_link_libraries(create_clib_plugin git2cpp)
+target_include_directories(create_clib_plugin PRIVATE "${PROJECT_BINARY_DIR}")

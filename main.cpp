@@ -1,12 +1,41 @@
-#include <git2cpp/initializer.h>
+#include "create_clib_plugin.h"
 #include "git2cpp/remote.h"
 #include "git2cpp/repo.h"
 
+
+#include <git2cpp/initializer.h>
 #include <git2/clone.h>
 #include <iostream>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 
-#define CREATE_CLIB_PLUGIN_VERSION @CREATE_CLIB_PLUGIN_VERSION@
+
+void replace_with_name(std::filesystem::path& file_path, std::string& project_name, std::string& replacement_text) {
+    std::fstream file_stream;
+    std::string line;
+    file_stream.open(file_path.string().c_str(), std::fstream::in);
+    if(file_stream.is_open()) {
+        std::stringstream buffer;
+        while (std::getline(file_stream, line)) {
+            //std::cout << line << std::endl;
+            auto starting_position = line.find(replacement_text);
+            if (starting_position != std::string::npos) {
+                std::string removed = line.replace(starting_position, replacement_text.length(), "");
+                std::string replaced = line.insert(starting_position, project_name);
+                buffer << replaced;
+            } else {
+                buffer << line;
+            }
+            buffer << std::endl;
+        }
+        file_stream.close();
+
+        file_stream.open(file_path.string().c_str(), std::fstream::out);
+        file_stream << buffer.str();
+        file_stream.close();
+    }
+}
 
 struct FetchCallbacks final : git::Remote::FetchCallbacks
 {
@@ -29,11 +58,8 @@ struct FetchCallbacks final : git::Remote::FetchCallbacks
 };
 
 int main(int argc, char* argv[]) {
-
-    std::cout << std::filesystem::current_path();
-
     char * url = R"(https://github.com/mlthelama/ExamplePlugin-SKSE64.git)";
-    char * name = "ExamplePlugin";
+    std::string name = "ExamplePlugin";
     std::filesystem::path path = std::filesystem::current_path();
 
     if(argc < 2) {
@@ -47,14 +73,19 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else if (strcmp(argv[1], "--version") == 0) {
-        std::cout << "Version " << CREATE_CLIB_PLUGIN_VERSION << std::endl;
+        std::cout << "Version " << create_clib_plugin_VERSION_MAJOR << "." << create_clib_plugin_VERSION_MINOR << std::endl;
         return 0;
     }
     else {
         name = argv[1];
     }
+
+    const auto bullshit = argv[2];
+    const auto bullshit2 = argv[3];
+
     for(int i = 2; i < argc; i++) {
-        if (strcmp(argv[1], "-p") == 0) {
+        auto val = argv[i];
+        if (strcmp(argv[i], "-p") == 0) {
             if (i + 1 >= argc) {
                 std::cout << "Path not properly defined!" << std::endl;
                 return 1;
@@ -65,7 +96,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         }
-        if (strcmp(argv[1], "-r") == 0) {
+        if (strcmp(argv[i], "-r") == 0) {
             if (i + 1 >= argc) {
                 std::cout << "Repository not properly defined! " << std::endl;
                 return 1;
@@ -74,12 +105,27 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    path /= name;
+
     auto_git_initializer;
+
     FetchCallbacks fetch_callbacks = FetchCallbacks();
     git_checkout_options checkout_opts = {GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE};
     try
     {
-        //git::Repository::clone(url, path, checkout_opts, fetch_callbacks);
+        git::Repository::clone(url, path.string().c_str(), checkout_opts, fetch_callbacks);
+        std::filesystem::path git_dir = path / ".git";
+
+        std::filesystem::remove_all(git_dir);
+        std::filesystem::path cmake_lists_file = path / "CMakeLists.txt";
+        std::string cmake_lists_replacement_text = "ExamplePlugin";
+
+        replace_with_name(cmake_lists_file, name, cmake_lists_replacement_text);
+
+        std::filesystem::path vcpkg_file = path / "vcpkg.json";
+        std::string vcpkg_replacement_text = "exmpleplugin";
+
+        replace_with_name(vcpkg_file, name, vcpkg_replacement_text);
     }
     catch (git::repository_clone_error &err)
     {
