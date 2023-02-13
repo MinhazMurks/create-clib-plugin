@@ -3,7 +3,10 @@
 #include "git2cpp/repo.h"
 
 #include <git2/clone.h>
+#include <iostream>
+#include <filesystem>
 
+#define CREATE_CLIB_PLUGIN_VERSION @CREATE_CLIB_PLUGIN_VERSION@
 
 struct FetchCallbacks final : git::Remote::FetchCallbacks
 {
@@ -25,17 +28,58 @@ struct FetchCallbacks final : git::Remote::FetchCallbacks
     }
 };
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
-    const char * url = R"(https://github.com/mlthelama/ExamplePlugin-SKSE64.git)";
-    const char * path = R"(B:\Everything\Repositories\create-clib-plugin\testpath)";
+    std::cout << std::filesystem::current_path();
+
+    char * url = R"(https://github.com/mlthelama/ExamplePlugin-SKSE64.git)";
+    char * name = "ExamplePlugin";
+    std::filesystem::path path = std::filesystem::current_path();
+
+    if(argc < 2) {
+        std::cout << "You must include at least 1 argument!" << std::endl;
+        return 1;
+    }
+    if (strcmp(argv[1], "--help") == 0) {
+        std::cout << "Usage:" << std::endl;
+        std::cout << "-p: " << "Specify path of parent directory the project will be created in" << std::endl;
+        std::cout << "-r: " << "Specify repository of template directory. Note, if this option is set, the project name may not be automatically changed." << std::endl;
+        return 0;
+    }
+    else if (strcmp(argv[1], "--version") == 0) {
+        std::cout << "Version " << CREATE_CLIB_PLUGIN_VERSION << std::endl;
+        return 0;
+    }
+    else {
+        name = argv[1];
+    }
+    for(int i = 2; i < argc; i++) {
+        if (strcmp(argv[1], "-p") == 0) {
+            if (i + 1 >= argc) {
+                std::cout << "Path not properly defined!" << std::endl;
+                return 1;
+            }
+            path = argv[i + 1];
+            if(!std::filesystem::exists(path)) {
+                std::cout << "Path specified does not exist!" << std::endl;
+                return 1;
+            }
+        }
+        if (strcmp(argv[1], "-r") == 0) {
+            if (i + 1 >= argc) {
+                std::cout << "Repository not properly defined! " << std::endl;
+                return 1;
+            }
+            url = argv[i + 1];
+        }
+    }
 
     auto_git_initializer;
     FetchCallbacks fetch_callbacks = FetchCallbacks();
     git_checkout_options checkout_opts = {GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE};
     try
     {
-        git::Repository::clone(url, path, checkout_opts, fetch_callbacks);
+        //git::Repository::clone(url, path, checkout_opts, fetch_callbacks);
     }
     catch (git::repository_clone_error &err)
     {
