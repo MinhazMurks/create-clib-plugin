@@ -1,0 +1,3 @@
+[submodule "include/libgit2cpp"]
+	path = include/libgit2cpp
+	url = https://github.com/MinhazMurks/libgit2cpp.git
