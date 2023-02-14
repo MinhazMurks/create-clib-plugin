@@ -14,7 +14,6 @@ set_target_properties(
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED YES
         CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON
-        CRT_FLAG_RELEASE "/MD"
 )
 target_include_directories(create_clib_plugin PUBLIC "include/libgit2cpp/libs/libgit2/include")
 target_include_directories(create_clib_plugin PUBLIC "include/libgit2cpp/include")
