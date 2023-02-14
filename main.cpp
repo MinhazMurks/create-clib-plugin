@@ -64,7 +64,8 @@ int main(int argc, char* argv[]) {
     }
     if (strcmp(argv[1], "--help") == 0) {
         std::cout << "Usage:" << std::endl;
-        std::cout << "-p: " << "Specify path of parent directory the project will be created in" << std::endl;
+        std::cout << "-version: " << "Prints the current version of the program." << std::endl;
+        std::cout << "-p: " << "Specify path of parent directory the project will be created in." << std::endl;
         std::cout << "-r: " << "Specify repository of template directory. Note, if this option is set, the project name may not be automatically changed." << std::endl;
         return 0;
     }
@@ -112,10 +113,10 @@ int main(int argc, char* argv[]) {
         std::cout << std::endl;
         if (auto detailed_info = std::get_if<git::repository_clone_error::detailed_info>(&err.data))
         {
-            std::cout << "ERROR " << detailed_info->klass << ": " << detailed_info->message << std::endl;
+            std::cout << "ERROR: " << detailed_info->klass << ": " << detailed_info->message << std::endl;
         }
         else {
-            std::cout << "ERROR " << std::get<int>(err.data) << ": no detailed info" << std::endl;
+            std::cout << "ERROR: " << std::get<int>(err.data) << ": no detailed info" << std::endl;
         }
         return EXIT_FAILURE;
     }
@@ -130,7 +131,6 @@ int main(int argc, char* argv[]) {
         replace_with_name(cmake_lists_file, name, cmake_lists_replacement_text);
         replace_with_name(vcpkg_file, name, vcpkg_replacement_text);
     }
-
 
     return 0;
 }
