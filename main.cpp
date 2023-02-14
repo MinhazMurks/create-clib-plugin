@@ -18,7 +18,6 @@ void replace_with_name(std::filesystem::path& file_path, std::string& project_na
     if(file_stream.is_open()) {
         std::stringstream buffer;
         while (std::getline(file_stream, line)) {
-            //std::cout << line << std::endl;
             auto starting_position = line.find(replacement_text);
             if (starting_position != std::string::npos) {
                 std::string removed = line.replace(starting_position, replacement_text.length(), "");
@@ -39,17 +38,9 @@ void replace_with_name(std::filesystem::path& file_path, std::string& project_na
 
 struct FetchCallbacks final : git::Remote::FetchCallbacks
 {
-    FetchCallbacks()
-    {
-    }
+    FetchCallbacks() = default;
 
-    void sideband_progress(char const * str, int len) override
-    {
-    }
-
-    void transfer_progress(git_indexer_progress const & progress) override
-    {
-    }
+    void sideband_progress(char const * str, int len) override {}
 
     git_credential * acquire_cred(const char * url, const char * username_from_url, unsigned allowed_types) override
     {
@@ -58,8 +49,13 @@ struct FetchCallbacks final : git::Remote::FetchCallbacks
 };
 
 int main(int argc, char* argv[]) {
-    char * url = R"(https://github.com/mlthelama/ExamplePlugin-SKSE64.git)";
+    std::string url = R"(https://github.com/mlthelama/ExamplePlugin-SKSE64.git)";
     std::string name = "ExamplePlugin";
+    std::string cmake_lists_replacement_text = "ExamplePlugin";
+    std::string vcpkg_replacement_text = "exampleplugin";
+
+    bool replace_project_name = true;
+
     std::filesystem::path path = std::filesystem::current_path();
 
     if(argc < 2) {
@@ -73,18 +69,14 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else if (strcmp(argv[1], "--version") == 0) {
-        std::cout << "Version " << create_clib_plugin_VERSION_MAJOR << "." << create_clib_plugin_VERSION_MINOR << std::endl;
+        std::cout << "Version " << create_clib_plugin_VERSION_MAJOR << "." << create_clib_plugin_VERSION_MINOR << "." << create_clib_plugin_VERSION_PATCH << std::endl;
         return 0;
     }
     else {
         name = argv[1];
     }
 
-    const auto bullshit = argv[2];
-    const auto bullshit2 = argv[3];
-
     for(int i = 2; i < argc; i++) {
-        auto val = argv[i];
         if (strcmp(argv[i], "-p") == 0) {
             if (i + 1 >= argc) {
                 std::cout << "Path not properly defined!" << std::endl;
@@ -102,40 +94,43 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             url = argv[i + 1];
+            replace_project_name = false;
         }
     }
 
     path /= name;
-
     auto_git_initializer;
 
     FetchCallbacks fetch_callbacks = FetchCallbacks();
     git_checkout_options checkout_opts = {GIT_CHECKOUT_OPTIONS_VERSION, GIT_CHECKOUT_SAFE};
     try
     {
-        git::Repository::clone(url, path.string().c_str(), checkout_opts, fetch_callbacks);
-        std::filesystem::path git_dir = path / ".git";
-
-        std::filesystem::remove_all(git_dir);
-        std::filesystem::path cmake_lists_file = path / "CMakeLists.txt";
-        std::string cmake_lists_replacement_text = "ExamplePlugin";
-
-        replace_with_name(cmake_lists_file, name, cmake_lists_replacement_text);
-
-        std::filesystem::path vcpkg_file = path / "vcpkg.json";
-        std::string vcpkg_replacement_text = "exmpleplugin";
-
-        replace_with_name(vcpkg_file, name, vcpkg_replacement_text);
+        git::Repository::clone(url.c_str(), path.string().c_str(), checkout_opts, fetch_callbacks);
     }
     catch (git::repository_clone_error &err)
     {
-        printf("\n");
+        std::cout << std::endl;
         if (auto detailed_info = std::get_if<git::repository_clone_error::detailed_info>(&err.data))
-            printf("ERROR %d: %s\n", detailed_info->klass, detailed_info->message);
-        else
-            printf("ERROR %d: no detailed info\n", std::get<int>(err.data));
+        {
+            std::cout << "ERROR " << detailed_info->klass << ": " << detailed_info->message << std::endl;
+        }
+        else {
+            std::cout << "ERROR " << std::get<int>(err.data) << ": no detailed info" << std::endl;
+        }
         return EXIT_FAILURE;
     }
+
+    std::filesystem::path git_dir = path / ".git";
+    std::filesystem::remove_all(git_dir);
+
+    if (replace_project_name) {
+        std::filesystem::path cmake_lists_file = path / "CMakeLists.txt";
+        std::filesystem::path vcpkg_file = path / "vcpkg.json";
+
+        replace_with_name(cmake_lists_file, name, cmake_lists_replacement_text);
+        replace_with_name(vcpkg_file, name, vcpkg_replacement_text);
+    }
+
 
     return 0;
 }
