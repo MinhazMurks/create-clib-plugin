@@ -20,7 +20,7 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: Configure CMake
-      run: cmake -B build
+      run: cmake -B build -DUSE_SSH=OFF
 
     - name: Build
       run: cmake --build build
