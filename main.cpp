@@ -132,5 +132,7 @@ int main(int argc, char* argv[]) {
         replace_with_name(vcpkg_file, name, vcpkg_replacement_text);
     }
 
+    git::Repository new_repository = git::Repository(path.string(), git::Repository::init);
+
     return 0;
 }
