@@ -17,9 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
-
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@master
         with:
@@ -30,6 +27,8 @@ jobs:
         uses: ashutoshvarma/action-cmake-build@master
         with:
           build-dir: build
+          cc: MSVC
+          cxx: MSVC
           configure-options: -G Ninja -DUSE_SSH=OFF
           build-type: Release
 
