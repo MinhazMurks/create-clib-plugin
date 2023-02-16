@@ -21,7 +21,7 @@ jobs:
         uses: nicledomaS/cmake_build_action@v1.4
         with:
           submodule_update: ON
-          cmake_args: -D<USE_SSH>=OFF
+          cmake_args: -DUSE_SSH=OFF
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
