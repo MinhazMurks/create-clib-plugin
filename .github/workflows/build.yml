@@ -23,16 +23,7 @@ jobs:
           submodule_update: ON
           cmake_args: -DUSE_SSH=OFF
 
-#      - name: Checkout submodules
-#        run: git submodule update --init --recursive
-#
-#      - name: old-build-conf
-#        run: cmake -B build -DUSE_SSH=OFF
-#
-#      - name: old-build-build
-#        run: cmake --build build
-
-      - name: print file structure\
+      - name: print file structure
         run: tree /f
 #
 #      - name: Upload Artifact
@@ -40,3 +31,21 @@ jobs:
 #        with:
 #          path: build/*.tar.gz
 #          name: build_artifact.tar.gz
+  build-old:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+
+      - name: old-build-conf
+        run: cmake -B build -DUSE_SSH=OFF
+
+      - name: old-build-build
+        run: cmake --build build
+
+      - name: print file structure
+        run: tree /f
