@@ -17,12 +17,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build
-        uses: nicledomaS/cmake_build_action@v1.4
-        with:
-          submodule_update: ON
-          cmake_args: -DUSE_SSH=OFF
-          create_package: ON
+#      - name: Build
+#        uses: nicledomaS/cmake_build_action@v1.4
+#        with:
+#          submodule_update: ON
+#          cmake_args: -DUSE_SSH=OFF
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+
+      - name: old-build-conf
+        run: cmake -DUSE_SSH=OFF build
+
+      - name: old-build-build
+        run: cmake --build build
 
       - name: print file structure\
         run: tree /f
