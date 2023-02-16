@@ -11,7 +11,11 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl" }
 
     steps:
       - name: Checkout
@@ -27,8 +31,8 @@ jobs:
         uses: ashutoshvarma/action-cmake-build@master
         with:
           build-dir: build
-          cc: "cl"
-          cxx: "cl"
+          cc: ${{ matrix.config.cc }}
+          cxx: ${{ matrix.config.cxx }}
           configure-options: -G Ninja -DUSE_SSH=OFF
           build-type: Release
 
