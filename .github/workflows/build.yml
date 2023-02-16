@@ -23,20 +23,20 @@ jobs:
           # ninja version to download. Default: 1.10.0
           version: 1.10.0
 
-      - name: Build with CMake
-        uses: ashutoshvarma/action-cmake-build@master
-        with:
-          build-dir: build
-          cc: MSVC
-          cxx: MSVC
-          configure-options: -G Ninja -DUSE_SSH=OFF
-          build-type: Release
-
-#      - name: Build
-#        uses: nicledomaS/cmake_build_action@v1.4
+#      - name: Build with CMake
+#        uses: ashutoshvarma/action-cmake-build@master
 #        with:
-#          submodule_update: ON
-#          cmake_args: -DUSE_SSH=OFF
+#          build-dir: build
+#          cc: MSVC
+#          cxx: MSVC
+#          configure-options: -G Ninja -DUSE_SSH=OFF
+#          build-type: Release
+
+      - name: Build
+        uses: nicledomaS/cmake_build_action@v1.4
+        with:
+          submodule_update: ON
+          cmake_args: -G Ninja -DUSE_SSH=OFF
 
       - name: print file structure
         run: tree /f
