@@ -17,11 +17,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build
-        uses: nicledomaS/cmake_build_action@v1.4
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@master
         with:
-          submodule_update: ON
-          cmake_args: -DUSE_SSH=OFF
+          # ninja version to download. Default: 1.10.0
+          version: 1.10.0
+
+      - name: Build with CMake
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          build-dir: ${{ runner.workspace }}/build
+          cc: cl
+          cxx: cl
+          configure-options: -G Ninja -DUSE_SSH=OFF
+          build-type: Release
+
+#      - name: Build
+#        uses: nicledomaS/cmake_build_action@v1.4
+#        with:
+#          submodule_update: ON
+#          cmake_args: -DUSE_SSH=OFF
 
       - name: print file structure
         run: tree /f
