@@ -22,12 +22,13 @@ jobs:
         with:
           submodule_update: ON
           cmake_args: -DUSE_SSH=OFF
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          path: build/*.tar.gz
-          name: build_artifact.tar.gz
+          create_package: ON
 
       - name: print file structure\
         run: tree /f
+#
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          path: build/*.tar.gz
+#          name: build_artifact.tar.gz
