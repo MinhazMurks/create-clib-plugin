@@ -30,20 +30,4 @@ jobs:
           name: build_artifact.tar.gz
 
       - name: print file structure\
-        run: dir /s /b /o:gn
-
-
-  build-old:
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Checkout submodules
-      run: git submodule update --init --recursive
-
-    - name: Configure CMake
-      run: cmake -B build -DUSE_SSH=OFF
-
-    - name: Build
-      run: cmake --build build
+        run: tree /f
