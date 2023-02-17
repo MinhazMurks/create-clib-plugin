@@ -10,18 +10,18 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          # ninja version to download. Default: 1.10.0
-          version: 1.10.0
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Setup Ninja
+#        uses: ashutoshvarma/setup-ninja@master
+#        with:
+#          # ninja version to download. Default: 1.10.0
+#          version: 1.10.0
 
 #      - name: Build with CMake
 #        uses: ashutoshvarma/action-cmake-build@master
@@ -32,11 +32,11 @@ jobs:
 #          configure-options: -G Ninja -DUSE_SSH=OFF
 #          build-type: Release
 
-      - name: Build
-        uses: nicledomaS/cmake_build_action@v1.4
-        with:
-          submodule_update: ON
-          cmake_args: -G Ninja;-DUSE_SSH=OFF
+#      - name: Build
+#        uses: nicledomaS/cmake_build_action@v1.4
+#        with:
+#          submodule_update: ON
+#          cmake_args: -G Ninja;-DUSE_SSH=OFF
 
 #      - name: print file structure
 #        run: tree /f
@@ -53,14 +53,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: cmake version
+        run: cmake --version
+
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
       - name: old-build-conf
         run: cmake -B build -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
 
+      - name: print build structure
+        run: tree /f
+
       - name: old-build-build
-        run: cmake --build build --config Release
+        run: cmake --build build --target Release
 
       - name: print file structure
         run: tree /f
