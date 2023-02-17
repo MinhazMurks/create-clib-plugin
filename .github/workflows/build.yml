@@ -57,10 +57,10 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: old-build-conf
-        run: cmake -B build -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON
+        run: cmake -B build -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
 
       - name: old-build-build
-        run: cmake --build build
+        run: cmake --build build --config Release
 
       - name: print file structure
         run: tree /f
