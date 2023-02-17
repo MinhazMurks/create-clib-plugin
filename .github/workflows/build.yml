@@ -57,7 +57,7 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: old-build-conf
-        run: cmake -B build -DUSE_SSH=OFF
+        run: cmake -B build -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON
 
       - name: old-build-build
         run: cmake --build build
