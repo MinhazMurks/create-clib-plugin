@@ -7,11 +7,11 @@ on:
     branches: [ "main" ]
 
 env:
-  BUILD_TYPE: Debug
+  BUILD_TYPE: Release
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -38,8 +38,8 @@ jobs:
           submodule_update: ON
           cmake_args: -G Ninja;-DUSE_SSH=OFF
 
-      - name: print file structure
-        run: tree /f
+#      - name: print file structure
+#        run: tree /f
 #
 #      - name: Upload Artifact
 #        uses: actions/upload-artifact@v2
@@ -60,7 +60,7 @@ jobs:
         run: cmake -B build -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
 
       - name: old-build-build
-        run: cmake --build build --target Release
+        run: cmake --build build --config Release
 
       - name: print file structure
         run: tree /f
