@@ -54,19 +54,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          # ninja version to download. Default: 1.10.0
-          version: 1.10.0
-
-      - name: cmake version
-        run: cmake --version
+        uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
       - name: old-build-conf
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -B build/release
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DUSE_SSH=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_MAKE_PROGRAM=${GITHUB_WORKSPACE}/ninja-build/ninja.exe -G Ninja -B build/release
 
       - name: print build structure
         run: tree /f
